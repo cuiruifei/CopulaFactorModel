@@ -1,16 +1,21 @@
-################################################################################
-# Goal: This function aims to generate data from a Gaussian copula factor model
-#      given a graph or a covariance matrix in the latent space.
-# Author: ...
-################################################################################
-rmvCopulaFactorModel <-function(n = 1000, g = NULL, sigma = NULL, impurity = 0, range.indicators = 3:10, lambda.min = 0.1, lambda.max = 1, sd.residual = 1){
-  #library(infotheo)
-  #library(pcalg)
+rmvCopulaFactorModel <-function(n = 1000, g = NULL, sigma = NULL, impurity = 0, range.indicators = 3:10, lambda.min = 0.1, lambda.max = 1, sd.residual = 1)
+{
+  # This function aims to generate data from a Gaussian copula factor model
+  #   given a graph or a covariance matrix in the latent space.
+  #
+  # Args:
+  #   n, sample size
+  #   g, a DAG (graphNEL)
+  #   sigma, a covariance matrix
+  #   impurity, No. of impurities of the measurement model
+  #   range.indicators, range of the number of indicators per factor
+  #   lambda.min and lambda.max, the minimum and maximum of factor loadings
+  #   sd.residual, standard deviation of residuals
+  #
+  # Return: a list, which contains generated data and ...
+  #
+
   library(mvtnorm)
-  
-  #### arguments
-  # range.indicators: range of the number of indicators per factor
-  # lambda.min, lambda.max: the minimum and maximum of factor loadings
   
   #### 0. Check inputs and Initialization
   ## check input g and sigma
