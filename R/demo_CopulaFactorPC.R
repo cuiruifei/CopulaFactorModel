@@ -1,5 +1,6 @@
 ######################################################################################
 # This is a demo to show how the Copula Factor PC algorithm works.
+# Author: Ruifei Cui
 ######################################################################################
 
 
@@ -47,7 +48,7 @@ for (i in sample(1:p, round(p/2))) {
 cop.fac.obj <- inferCopulaFactorModel(Y, Lambda = Lambda, nsamp = 1000)
 # extract samples of the correlation matrix over latent variables, ignoring the first 500 samples (burn-in)
 C.samples <- cop.fac.obj$Sigma.psamp[1:pl, 1:pl, 501:1000]
-# the poterior mean
+# the posterior mean
 C <- apply(C.samples, c(1,2), mean)
 # standard deviations
 C.sd <- apply(C.samples, c(1,2), sd)
@@ -62,5 +63,5 @@ graph.cfpc <- pc(suffStat = list(C = C, n = mean(C.ess[upper.tri(C.ess)])), inde
 
 ## show results
 par(mfrow = c(1,2))
-plot(g.cpdag, main = 'True graph')
+plot(g.cpdag, main = 'True Graph')
 plot(graph.cfpc, main = 'Copula Factor PC')
