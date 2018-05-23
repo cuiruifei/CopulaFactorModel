@@ -1,4 +1,4 @@
-inferCopulaFactorModel <- function (Y, Lambda = diag(ncol(Y)), trueSigma = NULL, ind.cat = integer(0), nsamp = 100, 
+inferCopulaFactorModel <- function (Y, Lambda = diag(ncol(Y)), trueSigma = NULL, nsamp = 100, 
                                     odens = max(1, round(nsamp/1000)), impute = any(is.na(Y)), 
                                     plugin.threshold = 20, plugin.marginal = (apply(Y, 2, function(x) {
                                       length(unique(x))
@@ -7,7 +7,7 @@ inferCopulaFactorModel <- function (Y, Lambda = diag(ncol(Y)), trueSigma = NULL,
   # This is the main function to perform inference for Gaussian copula factor models.
   # 
   # Args:
-  #   Y, a p by p data matrix
+  #   Y, a n by p data matrix
   #   Lambda, a p by k matrix representing the mapping from factors to observed variables
   #   nsamp, No. of samples
   #   For details about the arguements, refer to function 'sbgcop.mcmc' in R package 'sbgcop'
@@ -60,8 +60,8 @@ inferCopulaFactorModel <- function (Y, Lambda = diag(ncol(Y)), trueSigma = NULL,
   N <- apply(!is.na(Ranks), 2, sum)
   U <- t(t(Ranks)/(N + 1))
   Z <- qnorm(U)
-  # handle categorical variable
-  Z[, ind.cat] = Y[, ind.cat]
+  # # handle categorical variable
+  # Z[, ind.cat] = Y[, ind.cat]
   #
   Zfill <- matrix(rnorm(n * p), n, p)
   Z[is.na(Y)] <- Zfill[is.na(Y)]
@@ -95,7 +95,7 @@ inferCopulaFactorModel <- function (Y, Lambda = diag(ncol(Y)), trueSigma = NULL,
     
     ## sample Z1 (=eta1)
     for (j in index.1) {
-      if (!(j %in% ind.cat)){
+      # if (!(j %in% ind.cat)){
         ind.tmp = (1:k)[-j]
         Sjc <- S[j, ind.tmp] %*% solve(S[ind.tmp, ind.tmp])
         sdj <- sqrt(S[j, j] - Sjc %*% S[ind.tmp, j])
@@ -110,10 +110,10 @@ inferCopulaFactorModel <- function (Y, Lambda = diag(ncol(Y)), trueSigma = NULL,
         }
         ir <- (1:n)[is.na(R[, j])]
         X[ir, j] <- rnorm(length(ir), muj[ir], sdj)
-      }else{
-        ir <- (1:n)[is.na(R[, j])]
-        X[ir, j] = rnorm(length(ir))
-      }
+      # }else{
+      #   ir <- (1:n)[is.na(R[, j])]
+      #   X[ir, j] = rnorm(length(ir))
+      # }
     }
     Z1 = eta1 = X[,index.1]
     
