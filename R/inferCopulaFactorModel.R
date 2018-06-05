@@ -4,6 +4,7 @@ inferCopulaFactorModel <- function (Y, Lambda = diag(ncol(Y)), trueSigma = NULL,
                                       length(unique(x))
                                     }) > plugin.threshold), verb = TRUE) 
 {
+  #
   # This is the main function to perform inference for Gaussian copula factor models.
   # 
   # Args:
@@ -16,7 +17,7 @@ inferCopulaFactorModel <- function (Y, Lambda = diag(ncol(Y)), trueSigma = NULL,
   #   
   
   require(BDgraph)
-  #library(mvtnorm)
+  library(mvtnorm)
   library(sbgcop)
   Y <- as.matrix(Y)
   vnames <- colnames(Y)
