@@ -74,7 +74,7 @@ inferCopulaFactorModel <- function (Y, Lambda = diag(ncol(Y)), trueSigma = NULL,
   eta2 = matrix(rnorm(n*k2), n)
   eta = cbind(eta1, eta2)
   X = cbind(eta, Z2)
-  S <- cov(X)
+  S <- cov(X) + S0
   
   ####
   Y.pmean <- Y
