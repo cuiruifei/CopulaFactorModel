@@ -1,4 +1,4 @@
-inferCopulaFactorModel <- function (Y, Lambda = diag(ncol(Y)), trueSigma = NULL, nsamp = 100, 
+inferCopulaFactorModel <- function (Y, Lambda = diag(ncol(Y)), trueSigma = NULL, nsamp = 100, rand.start = F,
                                     odens = max(1, round(nsamp/1000)), impute = any(is.na(Y)), 
                                     plugin.threshold = 20, plugin.marginal = (apply(Y, 2, function(x) {
                                       length(unique(x))
@@ -74,7 +74,12 @@ inferCopulaFactorModel <- function (Y, Lambda = diag(ncol(Y)), trueSigma = NULL,
   eta2 = matrix(rnorm(n*k2), n)
   eta = cbind(eta1, eta2)
   X = cbind(eta, Z2)
-  S <- cov(X) + S0
+  # initialize S
+  if (rand.start){
+    S <- solve(rwish(S0*n0, n0 + 1))
+  }else{
+    S <- cov(X) + S0
+  }
   
   ####
   Y.pmean <- Y
@@ -153,7 +158,8 @@ inferCopulaFactorModel <- function (Y, Lambda = diag(ncol(Y)), trueSigma = NULL,
       
       eta = cbind(eta1, eta2)
       
-      ## identification condition
+      ## identification condition: force the first non-zero element
+      #   of each column of Lambda to be positive
       for (j in index.2) {
         X[,j] = X[,j] * sign(cov(X[,j], X[,k2+which(Lambda[,j] != 0)[1]]))
       }

@@ -25,7 +25,16 @@ pl <- 3
 data(HolzingerSwineford1939)
 
 ## select the 9 variables involved
-HS9 <- dplyr::select(HolzingerSwineford1939, x1:x9)
+HS9.raw <- dplyr::select(HolzingerSwineford1939, x1:x9)
+# sample size
+n <- nrow(HS9.raw)
+
+## transform the data into substantially nonparanormal and scale each variable to make it comparable
+HS9.trans <- data.frame(apply(HS9.raw, 2, function(x) scale(qchisq(rank(x)/(n+1),df=sample(2:8, 1)))))
+
+## please choose HS9.raw or HS9.trans
+#HS9 <- HS9.raw
+HS9 <- HS9.trans
 
 ## summary of the data set
 # VU: No. of unique values of a variable
@@ -197,11 +206,11 @@ for(i in 1:iters){
   # for method 1
   cv.ml <- lapply(cv_splits, test.ml, HS9 = HS9)
   # for method 2
-  cv.cf <- lapply(cv_splits, test.cf, HS9 = HS9)
+  #cv.cf <- lapply(cv_splits, test.cf, HS9 = HS9)
   
   ## collect estimates
   for(j in 1:length(cv.ml)) results.ml=rbind(results.ml,cv.ml[[j]])
-  for(j in 1:length(cv.cf)) results.cf=rbind(results.cf,cv.cf[[j]])
+  #for(j in 1:length(cv.cf)) results.cf=rbind(results.cf,cv.cf[[j]])
   
   #
   print(c('iters:', i))
@@ -212,12 +221,13 @@ for(i in 1:iters){
 matrix(apply(results.ml, 2, mean), 9, dimnames = list(paste0('Task', 1:9), c('MSE', 'R-squared')))
 ## the mean over 100 experiments for BGCF
 matrix(apply(results.cf, 2, mean), 9, dimnames = list(paste0('Task', 1:9), c('MSE', 'R-squared')))
-
+##
+results <- cbind(results.ml, results.cf)
 
 #### 5. Visualize the Results (Cross-validation) ####
 
 #### read saved results
-results = read.table(file = 'results/factor_analysis/MSE_R2_HS.txt')
+# results = read.table(file = 'results/factor_analysis/MSE_R2_HS.txt')
 # 1:9, MSE.ml over the 9 variables
 # 10:18, R2.ml
 # 19:27, MSE.cf
@@ -242,7 +252,7 @@ stat.results = data.frame(outcome = rep(paste0('Y', 1:9), 2), methods = c(rep('M
 ## for plot
 pd <- position_dodge(0.9) 
 ## MSE
-MSE.fig = ggplot(stat.results, aes(x = outcome, y = MSE, group = methods, fill = methods)) + coord_cartesian(ylim = c(0.4, 1.3)) +
+MSE.fig = ggplot(stat.results, aes(x = outcome, y = MSE, group = methods, fill = methods)) + coord_cartesian(ylim = c(0.3, 1)) +
   geom_bar(stat = 'identity', position = pd) +
   geom_point(aes(shape=methods), position=pd) + 
   xlab('outcome variable') +
@@ -266,12 +276,12 @@ MSE.fig
 ## R2
 R2.fig
 
-# #### save plots into files
-# ## MSE
-# pdf(file = 'result/factor_analysis/HS_MSE.pdf', width = 5, height = 2)
-# MSE.fig
-# dev.off()
-# ## both MSE and R2
-# pdf(file = 'result/factor_analysis/HS_MSE_R2.pdf', width = 5, height = 4)
-# gridExtra::grid.arrange(MSE.fig, R2.fig,  nrow = 2, ncol = 1)
-# dev.off()
+#### save plots into files
+## MSE
+pdf(file = 'results/factor_analysis/HS_MSE_nonparanormal.pdf', width = 5, height = 2)
+MSE.fig
+dev.off()
+## R2
+pdf(file = 'results/factor_analysis/HS_R2.pdf', width = 5, height = 2)
+R2.fig
+dev.off()

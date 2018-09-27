@@ -41,13 +41,30 @@ Y <- discretize(Z, nbins = 2)
 
 ### 2. Run BGCF Approach ####
 
+# burn-in
+b.in <- 100
+# No. of samples
+n.samp <- 500
 ## inference
-cop.fac.obj <- inferCopulaFactorModel(Y, Lambda0, nsamp = 200, verb = T)
+cop.fac.obj <- inferCopulaFactorModel(Y, Lambda0, nsamp = n.samp, rand.start = F, odens = 1, verb = T)
+# 
+Sigma.samp <- cop.fac.obj$Sigma.psamp[,,-(1:b.in)]
 # get Sigma (the correlation matrix over integrated vector)
-Sigma <- apply(cop.fac.obj$Sigma.psamp[,,101:200], c(1,2), mean)
+Sigma <- apply(Sigma.samp, c(1,2), mean)
 # C: correlation matrix over latent factors
 C <- Sigma[1:pl, 1:pl]
 # Lambda: matrix of factor loadings
 Lambda <- round(t(solve(C) %*% Sigma[1:pl, -(1:pl)]), 3)
 # D: residual variance
 D <- round(Sigma[-(1:pl), -(1:pl)] - Lambda %*% C %*% t(Lambda), 3)
+
+
+#### 3. Convergence Diagnostic ####
+
+## Autocorrelation
+# for 
+acf(Sigma.samp[5,3,], plot = T)
+
+## Potential Scale Reduction Factor
+
+
