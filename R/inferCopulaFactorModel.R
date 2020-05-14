@@ -169,7 +169,7 @@ inferCopulaFactorModel <- function (Y, Lambda = diag(ncol(Y)), trueSigma = NULL,
     X = t( (t(X)-apply(X,2,mean)))
     
     ## sample S
-    P <- rgwish(n = 1, adj.g = G, b = n+n0, D = S0*n0+crossprod(X))[,,1]
+    P <- rgwish(n = 1, adj.g = G, b = n+n0, D = S0*n0+crossprod(X))
     S <- solve(P)
     S = cov2cor(S)
     
